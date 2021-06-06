@@ -15,7 +15,8 @@ struct PrelimInputs{
 //FUNCTION PROTOTYPES
 struct PrelimInputs * PrelimInputs();
 long toBytes(char input[]);
-void printArray(int input[]);
+void printArray(int input[], int length);
+int arrayLength(long size1, long size2);
 int * generateCache(long cacheSize, long blockSize);
 //END FUNCTION PROTOTYPES
 
@@ -23,13 +24,9 @@ int main(){
     struct PrelimInputs * prelimInputs = PrelimInputs();
     int * cache = generateCache(prelimInputs -> cacheSize,
             prelimInputs -> blockSize);
-    //printArray(cache);
-    /*
-    for(int i = 0; i < (sizeof(cache)/sizeof(cache[0])); i++){
-        std::cout << cache[i];
-    }
-    */
-    std::cout << cache[3];
+    int cacheArrayLength = arrayLength(prelimInputs -> cacheSize,
+            prelimInputs -> blockSize);
+    printArray(cache, cacheArrayLength);
     free(cache);
     return 0;
 }//main()
@@ -98,19 +95,23 @@ long toBytes(char input[7]){
 
     return numBytes * multiplier;
 }//toBytes(char[])
-//
+
+int arrayLength(long size1, long size2){
+    int length = size1 / size2;
+    return length;
+}
+
 int * generateCache(long cacheSize, long blockSize){
     int cacheLines = cacheSize / blockSize;
     int * cache = (int*)malloc(sizeof(int) * cacheLines);
-    for(int cacheIndex = 0; cacheIndex < cacheLines; cacheIndex++){
+    for(int cacheIndex = 0; cacheIndex < cacheLines+1; cacheIndex++){
       cache[cacheIndex] = -1;
     }//for
     return cache;
 }//generateCache(long, long)
 
-void printArray(int input[]){
-    int length = sizeof(input)/sizeof(int);
-    for(int i = 0; i < length; i++){
+void printArray(int input[], int length){
+    for(int i = 0; i < length + 1; i++){
         std::cout << input[i] << "\n";
     }
 }//printTest()

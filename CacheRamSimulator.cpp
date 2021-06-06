@@ -2,30 +2,45 @@
 #include <string>
 #include <cctype>
 #include <cmath>
+#include <cstdlib>
 
-struct FourInputs{
-    double cacheSize;
-    double ramSize;
-    double blockSize;
+struct PrelimInputs{
+    long cacheSize;
+    long ramSize;
+    long blockSize;
     int mapMethod;
+    int n;
 };
 
-struct FourInputs * PrelimInputs();
-long toBytes(char input[7]);
-void printTest();
+//FUNCTION PROTOTYPES
+struct PrelimInputs * PrelimInputs();
+long toBytes(char input[]);
+void printArray(int input[]);
+int * generateCache(long cacheSize, long blockSize);
+//END FUNCTION PROTOTYPES
 
 int main(){
-    //PrelimInputs();
-    char test[] = "512mb";
-    std::cout << toBytes(test);
+    struct PrelimInputs * prelimInputs = PrelimInputs();
+    int * cache = generateCache(prelimInputs -> cacheSize,
+            prelimInputs -> blockSize);
+    //printArray(cache);
+    /*
+    for(int i = 0; i < (sizeof(cache)/sizeof(cache[0])); i++){
+        std::cout << cache[i];
+    }
+    */
+    std::cout << cache[3];
+    free(cache);
     return 0;
 }//main()
 
 //FUNCTIONS
-/*
-struct FourInputs * PrelimInputs(){
+struct PrelimInputs * PrelimInputs(){
+    struct PrelimInputs prelimInputs;
     char tempRam[7], tempCache[7], tempBlock[7];
+    long ramBytes, cacheBytes, blockBytes;
     int mapMethod;
+    int n = 0;
 
     std::cout << "Size of RAM: \n";
     std::cin >> tempRam;
@@ -34,16 +49,26 @@ struct FourInputs * PrelimInputs(){
     std::cout << "Size of Block: \n";
     std::cin >> tempBlock;
     std::cout << "Mapping method: Direct(1) "
-            "Associative(2) Set-Associative(2) \n";
+            "Associative(2) Set-Associative(3) \n";
     std::cin >> mapMethod;
+    if(mapMethod == 3){
+        std::cout << "Enter n: (n-way set associative mapping) \n";
+        std::cin >> n;
+    }
 
-    double ramBytes = toBytes(tempRam);
-    double cacheBytes = toBytes(tempCache);
-    double blockBytes = toBytes(tempBlock);
+    ramBytes = toBytes(tempRam);
+    cacheBytes = toBytes(tempCache);
+    blockBytes = toBytes(tempBlock);
+
+    prelimInputs.cacheSize = cacheBytes;
+    prelimInputs.ramSize = ramBytes;
+    prelimInputs.blockSize = blockBytes;
+    prelimInputs.mapMethod = mapMethod;
+    prelimInputs.n = n;
 
     return &prelimInputs;
 }//PrelimInuts()
-*/
+
 
 long toBytes(char input[7]){
     long bytes, multiplier;
@@ -70,10 +95,22 @@ long toBytes(char input[7]){
     } else if(alpha[0] == 'g'){
         multiplier = pow(2, 30);
     }
-    bytes = numBytes * multiplier;
-    return bytes;
-}//toBytes
 
-void printTest(){
+    return numBytes * multiplier;
+}//toBytes(char[])
 
+int * generateCache(long cacheSize, long blockSize){
+    int cacheLines = cacheSize / blockSize;
+    int * cache = (int*)malloc(sizeof(int) * cacheLines);
+    for(int cacheIndex = 0; cacheIndex < cacheLines; cacheIndex++){
+      cache[cacheIndex] = -1;
+    }//for
+    return cache;
+}//generateCache(long, long)
+
+void printArray(int input[]){
+    int length = sizeof(input)/sizeof(int);
+    for(int i = 0; i < length; i++){
+        std::cout << input[i] << "\n";
+    }
 }//printTest()

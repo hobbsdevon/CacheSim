@@ -98,7 +98,7 @@ long toBytes(char input[7]){
 
     return numBytes * multiplier;
 }//toBytes(char[])
-
+//
 int * generateCache(long cacheSize, long blockSize){
     int cacheLines = cacheSize / blockSize;
     int * cache = (int*)malloc(sizeof(int) * cacheLines);

@@ -12,27 +12,39 @@ struct PrelimInputs{
     int n;
 };
 
+struct Address{
+    int dirtyBit;
+    int tag;
+    int r;
+    int word;
+};
+
 //FUNCTION PROTOTYPES
-struct PrelimInputs * PrelimInputs();
+struct PrelimInputs PrelimInputs();
 long toBytes(char input[]);
 void printArray(int input[], int length);
-int arrayLength(long size1, long size2);
-int * generateCache(long cacheSize, long blockSize);
+int arrayLength(long storageSize, long blockSize);
+int * generateStorageArray(long storageSize, long blockSize);
+struct Address inputAddress(int ramSize, int mapMethod, int cachelines, int n);
+int bitLength(int bytes);
 //END FUNCTION PROTOTYPES
 
 int main(){
-    struct PrelimInputs * prelimInputs = PrelimInputs();
-    int * cache = generateCache(prelimInputs -> cacheSize,
-            prelimInputs -> blockSize);
-    int cacheArrayLength = arrayLength(prelimInputs -> cacheSize,
-            prelimInputs -> blockSize);
+    std::cout << bitLength(4) << "\n";
+    std::cout << bitLength(128) << "\n";
+    std::cout << bitLength(1024) << "\n";
+    struct PrelimInputs prelimInputs = PrelimInputs();
+    int * cache = generateStorageArray(prelimInputs.cacheSize,
+            prelimInputs.blockSize);
+    int cacheArrayLength = arrayLength(prelimInputs.cacheSize,
+            prelimInputs.blockSize);
     printArray(cache, cacheArrayLength);
     free(cache);
     return 0;
 }//main()
 
 //FUNCTIONS
-struct PrelimInputs * PrelimInputs(){
+struct PrelimInputs PrelimInputs(){
     struct PrelimInputs prelimInputs;
     char tempRam[7], tempCache[7], tempBlock[7];
     long ramBytes, cacheBytes, blockBytes;
@@ -63,14 +75,14 @@ struct PrelimInputs * PrelimInputs(){
     prelimInputs.mapMethod = mapMethod;
     prelimInputs.n = n;
 
-    return &prelimInputs;
+    return prelimInputs;
 }//PrelimInuts()
 
 
 long toBytes(char input[7]){
     long bytes, multiplier;
-    char nums[5];
-    char alpha[3];
+    char nums[5] = {};
+    char alpha[3] = {};
     int numIndex = 0;
     int alphaIndex = 0;
     for(int i = 0; i <= (strlen(input)-1); i++){
@@ -92,26 +104,58 @@ long toBytes(char input[7]){
     } else if(alpha[0] == 'g'){
         multiplier = pow(2, 30);
     }
-
     return numBytes * multiplier;
 }//toBytes(char[])
 
-int arrayLength(long size1, long size2){
-    int length = size1 / size2;
+int arrayLength(long storageSize, long blockSize){
+    int length = storageSize / blockSize;
     return length;
 }
 
-int * generateCache(long cacheSize, long blockSize){
-    int cacheLines = cacheSize / blockSize;
-    int * cache = (int*)malloc(sizeof(int) * cacheLines);
-    for(int cacheIndex = 0; cacheIndex < cacheLines+1; cacheIndex++){
-      cache[cacheIndex] = -1;
+int * generateStorageArray(long storageSize, long blockSize){
+    int blockNum = storageSize / blockSize;
+    int * storageArray = (int*)malloc(sizeof(int) * blockNum);
+    for(int storageIndex = 0; storageIndex < blockNum+1; storageIndex++){
+      storageArray[storageIndex] = -1;
     }//for
-    return cache;
+    return storageArray;
 }//generateCache(long, long)
 
 void printArray(int input[], int length){
     for(int i = 0; i < length + 1; i++){
         std::cout << input[i] << "\n";
     }
-}//printTest()
+
+}//printArray(int[], int)
+
+
+struct Address inputAddress(int ramSize, int mapMethod, int cacheLines, int n){
+    struct Address address;
+    int tempAddress;
+    int addressLength = bitLength(ramSize);
+    std::cout << "Address you would like to test: \n";
+    std::cin >> tempAddress;
+    address.dirtyBit = 0;
+    if(mapMethod == 0){ //direct
+        n = 1;
+        address.tag = tempAddress << ();
+        address.r = tempAddress << ();
+        address.word = tempAddress << ();
+    } else if(mapMethod == 1){ //associative
+        n = cacheLines;
+        address.tag = tempAddress << ();
+        address.r = tempAddress << ();
+        address.word = tempAddress << ();
+    } else if (mapMethod == 2){ //set-associative
+        n = n;
+        address.tag = tempAddress << ();
+        address.r = tempAddress << ();
+        address.word = tempAddress << ();
+    }
+    return address;
+}//inputAddress(int)
+
+
+int bitLength(int bytes){
+    return (log(bytes))/(log(2));
+}//bitLength(int)

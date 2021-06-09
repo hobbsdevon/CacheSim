@@ -21,13 +21,12 @@ struct Address{
 
 //FUNCTION PROTOTYPES
 struct PrelimInputs PrelimInputs();
-long toBytes(char input[]);
-void printArray(int input[], int length);
-int arrayLength(long storageSize, long blockSize);
-int * generateStorageArray(long storageSize, long blockSize);
-struct Address inputAddress(int ramSize, int cacheSize, int blockSize,
-            int mapMethod, int n);
-int bitLength(int bytes);
+long toBytes(char []);
+void printArray(int [], int);
+int arrayLength(long, long);
+int * generateStorageArray(long, long);
+struct Address inputAddress(int, int, int, int, int);
+int bitLength(int);
 //END FUNCTION PROTOTYPES
 
 int main(){
@@ -38,8 +37,8 @@ int main(){
             prelimInputs.blockSize);
     printArray(cache, cacheArrayLength);
     struct Address address = inputAddress(prelimInputs.ramSize,
-                prelimInputs.cacheSize, prelimInputs.blockSize,
-                prelimInputs.mapMethod, prelimInputs.n);
+            prelimInputs.cacheSize, prelimInputs.blockSize,
+            prelimInputs.mapMethod, prelimInputs.n);
     free(cache);
     return 0;
 }//main()
@@ -79,13 +78,12 @@ struct PrelimInputs PrelimInputs(){
     return prelimInputs;
 }//PrelimInuts()
 
-
 long toBytes(char input[7]){
-    long bytes, multiplier;
+    long multiplier;
     char nums[5] = {};
     char alpha[3] = {};
-    int numIndex = 0;
-    int alphaIndex = 0;
+    int numIndex = 0, alphaIndex = 0;
+
     for(int i = 0; i <= (strlen(input)-1); i++){
         if(isdigit(input[i])){
             nums[numIndex] = input[i];
@@ -95,7 +93,9 @@ long toBytes(char input[7]){
             alphaIndex++;
         }
     }
+
     int numBytes = atoi(nums);
+
     if(alpha[0] == 'b'){
         multiplier = pow(2, 0);
     } else if(alpha[0] == 'k'){
@@ -127,9 +127,7 @@ void printArray(int input[], int length){
         std::cout << input[i] << "\n";
     }
     std::cout << "\n";
-
 }//printArray(int[], int)
-
 
 struct Address inputAddress(int ramSize, int cacheSize, int blockSize,
             int mapMethod, int n){
@@ -169,21 +167,8 @@ struct Address inputAddress(int ramSize, int cacheSize, int blockSize,
     address.word = (tempAddress & wordMask);
 
     return address;
-}//inputAddress(int)
-
+}//inputAddress(int, int, int, int, int)
 
 int bitLength(int bytes){
     return (log(bytes))/(log(2));
 }//bitLength(int)
-
-/*
-RAM: 64b
-cache: 32b
-block: 8b
-
-address: 56 (111000)
-tag: 1 bytes = 1 (1)       mask: 100000 (32)
-r: 2 bytes = 3 (11)         mask: 011000 (24)
-word: 3 bytes = 0 (000)     mask: 000111 (7)
-
-*/

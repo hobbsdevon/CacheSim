@@ -3,6 +3,7 @@
 #include <cctype>
 #include <cmath>
 #include <cstdlib>
+#include <cstring>
 
 struct PrelimInputs{
     long cacheSize;

@@ -32,6 +32,7 @@ int bitLength(int);
 
 int main(){
     struct PrelimInputs prelimInputs = PrelimInputs();
+    std::cout << "prelimInputs.cacheSize: " << prelimInputs.cacheSize;
     int * cache = generateStorageArray(prelimInputs.cacheSize,
             prelimInputs.blockSize);
     int cacheArrayLength = arrayLength(prelimInputs.cacheSize,
@@ -75,7 +76,7 @@ struct PrelimInputs PrelimInputs(){
     prelimInputs.blockSize = blockBytes;
     prelimInputs.mapMethod = mapMethod;
     prelimInputs.n = n;
-
+    std::cout << "prelimInputs.cacheSize2: " << prelimInputs.cacheSize;
     return prelimInputs;
 }//PrelimInuts()
 
@@ -115,8 +116,11 @@ int arrayLength(long storageSize, long blockSize){
 }
 
 int * generateStorageArray(long storageSize, long blockSize){
+    std::cout << "Storage size: " << storageSize;
+    std::cout << "Block size: " << blockSize;
     int blockNum = storageSize / blockSize;
     int * storageArray = (int*)malloc(sizeof(int) * (blockNum));
+    std::cout << "blockNum = " << blockNum;
     for(int storageIndex = 0; storageIndex < blockNum; storageIndex++){
       storageArray[storageIndex] = -1;
     }//for

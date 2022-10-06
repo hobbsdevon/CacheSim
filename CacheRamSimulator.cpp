@@ -1,7 +1,7 @@
 /*
 =====NOTES=====
 toBytes only works if given a label (b, mb, gb, etc.)
-
+character arrays to strings
 */
 
 #include <iostream>
@@ -34,18 +34,32 @@ int arrayLength(long, long);
 int * generateStorageArray(long, long);
 struct Address inputAddress(int, int, int, int, int);
 int bitLength(int);
+int checkCache(int, int [], int, int, int);
+int r(int, int);
+int tag(int, int);
+int toBinary(int);
+int toDecimal(int);
+void addToCache(int, int [], int, int, int);
+int blockNum(struct Address, int);
+int updateExecute(int);
 //END FUNCTION PROTOTYPES
 
 int main(){
+    int execute = 1;
     struct PrelimInputs prelimInputs = PrelimInputs();
     int * cache = generateStorageArray(prelimInputs.cacheSize,
             prelimInputs.blockSize);
     int cacheArrayLength = arrayLength(prelimInputs.cacheSize,
             prelimInputs.blockSize);
     printArray(cache, cacheArrayLength);
-    struct Address address = inputAddress(prelimInputs.ramSize,
+    while(execute!=0){
+        struct Address address = inputAddress(prelimInputs.ramSize,
             prelimInputs.cacheSize, prelimInputs.blockSize,
             prelimInputs.mapMethod, prelimInputs.n);
+        int block = blockNum(address, prelimInputs.blockSize);
+        checkCache(block, cache, prelimInputs.mapMethod, cacheArrayLength, prelimInputs.n);
+        execute = updateExecute(execute);
+    }//while
     free(cache);
     return 0;
 }//main()
@@ -177,3 +191,108 @@ struct Address inputAddress(int ramSize, int cacheSize, int blockSize,
 int bitLength(int bytes){
     return (log(bytes))/(log(2));
 }//bitLength(int)
+
+int checkCache(int block, int cache[], int mapMethod, int cacheSize, int n){
+  int addressTag = tag(block, cacheSize);
+  if(mapMethod == 1){
+    int line = block%cacheSize;
+    if(cache[line] == addressTag){
+      printf("\ncache hit\n");
+      return 1;
+    }//if
+  } else if(mapMethod == 2) {
+
+
+    for(int i = 0; i < cacheSize; i++){
+      if(cache[i] == addressTag){
+        printf("\ncache hit\n");
+        return 1;
+      }//if
+    }//for
+  } else {
+    int numOfSets = cacheSize/n;
+    int start = toDecimal(r(block, numOfSets));
+    int end = start + n;
+    for(int i = start; i < end; i++){
+      if(cache[i] == addressTag){
+        printf("\ncache hit\n");
+        return 1;
+      }//if
+    }//for
+  }//if else
+  addToCache(block, cache, mapMethod, cacheSize, n);
+  printf("\ncache miss\n");
+  return 0;
+}//checkCache
+
+int r(int block, int toGetR){
+  int binaryBlock = toBinary(block);
+  int rBitNum = bitLength(toGetR);
+  int r = binaryBlock % (int)(pow(10, rBitNum));
+  return r;
+}//r
+
+int tag(int block, int cacheSize){
+  int binaryBlock = toBinary(block);
+  int tagBitNum = bitLength(cacheSize);
+  int tag = binaryBlock/(pow(10, tagBitNum));
+  return tag;
+}//tag
+
+int toBinary(int decimalNum){
+  int binaryNum = 0;
+  int rem, temp = 1;
+  while(decimalNum != 0){
+    rem = decimalNum % 2;
+    decimalNum = decimalNum / 2;
+    binaryNum = binaryNum + rem * temp;
+    temp = temp * 10;
+  }//while
+  return binaryNum;
+}//toBinary
+
+int toDecimal(int binary){
+    int num = binary;
+    int decimal = 0;
+
+    int base = 1;
+    int temp = num;
+    while (temp) {
+        int lastDigit = temp % 10;
+        temp = temp / 10;
+        decimal += lastDigit * base;
+        base = base * 2;
+    }//while
+     return decimal;
+}//toDecimal
+
+void addToCache(int block, int cache[], int mapMethod, int cacheSize, int n){ //tag as a parameter
+  int addressTag = tag(block, cacheSize);
+  if(mapMethod == 1){
+    int line = block%cacheSize;
+    cache[line] = addressTag;
+  } else if(mapMethod == 2){
+    int randomIndex = rand() % (cacheSize + 1);
+    cache[randomIndex] = addressTag;
+  } else {
+    int randomIndex = rand() % (n + 1);
+    int numOfSets = cacheSize/n;
+    cache[randomIndex + toDecimal(r(block, numOfSets))] = addressTag;
+  }//if else
+}//addToCache
+
+int blockNum(struct Address address, int blockSize){
+  std::string tagString = std::to_string(address.tag);
+  std::string rString = std::to_string(address.r);
+  std::string wordString = std::to_string(address.word);
+  std::string addressString = tagString + rString + wordString;
+  long addressInt = stoi(addressString);
+  int block = addressInt/blockSize;
+  return block;
+}//blockNum
+
+int updateExecute(int execute){
+  printf("Would you like to test another address? Yes:(1) No:(0)");
+  scanf("%d", &execute);
+  return execute;
+}//updateExecute

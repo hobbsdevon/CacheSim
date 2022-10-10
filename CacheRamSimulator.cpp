@@ -2,6 +2,8 @@
 =====NOTES=====
 toBytes only works if given a label (b, mb, gb, etc.)
 character arrays to strings
+Check validity of address, should be from 0 to n-1 ramBytes
+Change ints to longs
 */
 
 #include <iostream>
@@ -42,20 +44,24 @@ int toDecimal(int);
 void addToCache(int, int [], int, int, int);
 int blockNum(struct Address, int);
 int updateExecute(int);
+int checkValidity(int, int, int);
+int addressStructToInt(struct Address);
 //END FUNCTION PROTOTYPES
 
 int main(){
-    int execute = 1;
+    int execute = 1, validity = 1;
     struct PrelimInputs prelimInputs = PrelimInputs();
     int * cache = generateStorageArray(prelimInputs.cacheSize,
             prelimInputs.blockSize);
     int cacheArrayLength = arrayLength(prelimInputs.cacheSize,
             prelimInputs.blockSize);
     printArray(cache, cacheArrayLength);
-    while(execute!=0){
+    std::cout << "\n";
+    while(execute!=0 & validity == 1){
         struct Address address = inputAddress(prelimInputs.ramSize,
             prelimInputs.cacheSize, prelimInputs.blockSize,
             prelimInputs.mapMethod, prelimInputs.n);
+        validity = checkValidity(0, prelimInputs.ramSize-1, addressStructToInt(address));
         int block = blockNum(address, prelimInputs.blockSize);
         checkCache(block, cache, prelimInputs.mapMethod, cacheArrayLength, prelimInputs.n);
         execute = updateExecute(execute);
@@ -282,11 +288,7 @@ void addToCache(int block, int cache[], int mapMethod, int cacheSize, int n){ //
 }//addToCache
 
 int blockNum(struct Address address, int blockSize){
-  std::string tagString = std::to_string(address.tag);
-  std::string rString = std::to_string(address.r);
-  std::string wordString = std::to_string(address.word);
-  std::string addressString = tagString + rString + wordString;
-  long addressInt = stoi(addressString);
+  int addressInt = addressStructToInt(address);
   int block = addressInt/blockSize;
   return block;
 }//blockNum
@@ -296,3 +298,20 @@ int updateExecute(int execute){
   scanf("%d", &execute);
   return execute;
 }//updateExecute
+
+int checkValidity(int min, int max, int val){
+  if(val < min || val > max){
+    return 0;
+  }
+  return 1;
+}//checkValidity
+
+int addressStructToInt(struct Address address){
+	std::string tagString = std::to_string(address.tag);
+  std::string rString = std::to_string(address.r);
+  std::string wordString = std::to_string(address.word);
+  std::string addressString = tagString + rString + wordString;
+  long addressInt = stoi(addressString);
+  return addressInt;
+}
+

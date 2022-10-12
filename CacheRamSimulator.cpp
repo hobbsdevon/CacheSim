@@ -57,11 +57,14 @@ int main(){
             prelimInputs.blockSize);
     printArray(cache, cacheArrayLength);
     std::cout << "\n";
-    while(execute!=0 & validity == 1){
+    while(execute!=0 & validity != 0){
         struct Address address = inputAddress(prelimInputs.ramSize,
             prelimInputs.cacheSize, prelimInputs.blockSize,
             prelimInputs.mapMethod, prelimInputs.n);
         validity = checkValidity(0, prelimInputs.ramSize-1, addressStructToInt(address));
+        if(validity != 1){
+          return 0;
+        }
         int block = blockNum(address, prelimInputs.blockSize);
         checkCache(block, cache, prelimInputs.mapMethod, cacheArrayLength, prelimInputs.n);
         execute = updateExecute(execute);

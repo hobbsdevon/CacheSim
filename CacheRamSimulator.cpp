@@ -4,6 +4,7 @@ toBytes only works if given a label (b, mb, gb, etc.)
 character arrays to strings
 Check validity of address, should be from 0 to n-1 ramBytes
 Change ints to longs
+Bit masking isntead of struct address
 */
 
 #include <iostream>
